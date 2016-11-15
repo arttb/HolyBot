@@ -9,13 +9,13 @@ using namespace std;
 
 int main( int argc, char** argv) {
 
-    CGImageRef screenShot = CGDisplayCreateImage(CGMainDisplayID());//screencapture(1);//CGWindowListCreateImage(CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID, kCGWindowImageDefault);
+    CGImageRef screenShot = CGWindowListCreateImage(CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID, kCGWindowImageDefault);
 
-    /*CFStringRef file = CFSTR("/Users/artemiygalkin/Programming/images.jpeg");
+    CFStringRef file = CFSTR("/Users/artemiygalkin/Programming/images.jpeg");
     CFStringRef type = CFSTR("../res/scrn.jpeg");
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, file, kCFURLPOSIXPathStyle, false);
     CGImageDestinationRef idst = CGImageDestinationCreateWithURL(urlRef, type, 1, NULL);
     CGImageDestinationAddImage(idst, screenShot, NULL );
-    CGImageDestinationFinalize(idst);*/
+    CGImageDestinationFinalize(idst);
 
 }
