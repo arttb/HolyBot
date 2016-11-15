@@ -1,0 +1,6 @@
+cmake/bin/
+cmake/CMakeFiles/
+cmake/cmake_install.cmake
+cmake/CMakeCache.txt
+cmake/Makefile
+bin/HolyBot
