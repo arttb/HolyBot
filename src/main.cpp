@@ -56,31 +56,31 @@ int main( int argc, char** argv) {
         cv::Mat blurredImage;
         cv::GaussianBlur(grayImage, blurredImage, cv::Size(3, 3), 0, 0 );
 
-        //Canny Edge Detection.
+        //Canny Edge Detection
 		cv::Mat cannyImage;
 		Canny(blurredImage, cannyImage, 200, 100);
 
-        //Find contours after using canny edge detection.
+        //Find contours after using canny edge detection
         cv::vector<cv::vector<cv::Point> > contours;
         cv::findContours(cannyImage, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-        //Find Polygons.
+        //Find Polygons
         for (int i = 0; i < contours.size(); i++){
             
-            //Approximate contour with accuracy proportional to the contour perimeter.
+            //Approximate contour with accuracy proportional to the contour perimeter
             cv::vector<cv::Point> approx;
             approxPolyDP(cv::Mat(contours[i]), approx, arcLength(cv::Mat(contours[i]), true) * 0.02, true);
 
-            //Skip convex objects.
+            //Skip convex objects
             if (!cv::isContourConvex(approx)) continue;
 
-            //Skip small objects.
+            //Skip small objects
             if (fabs(contourArea(contours[i])) < 200) continue;
 
-            //Skip if not a quadrilateral.
+            //Skip if not a quadrilateral
             if (approx.size() != 4) continue;
 
-            //Paint points.
+            //Paint points
             for (int i = 0; i < approx.size(); i++) {
              	circle(croppedImage, approx[i], 1, cv::Scalar(0, 0, 255), 8, 1, 0);
             }
