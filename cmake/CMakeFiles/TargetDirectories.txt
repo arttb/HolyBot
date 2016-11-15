@@ -1,0 +1,3 @@
+/Users/artemiygalkin/Programming/HolyBot/cmake/CMakeFiles/edit_cache.dir
+/Users/artemiygalkin/Programming/HolyBot/cmake/CMakeFiles/rebuild_cache.dir
+/Users/artemiygalkin/Programming/HolyBot/cmake/CMakeFiles/../bin/HolyBot.dir
