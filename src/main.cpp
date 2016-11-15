@@ -9,13 +9,18 @@ using namespace std;
 
 int main( int argc, char** argv) {
 
-    CGImageRef screenShot = CGWindowListCreateImage(CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID, kCGWindowImageDefault);
+    CGImageRef screenshot = CGDisplayCreateImage(CGMainDisplayID());
 
-    CFStringRef file = CFSTR("/Users/artemiygalkin/Programming/images.jpeg");
-    CFStringRef type = CFSTR("../res/scrn.jpeg");
-    CFURLRef urlRef = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, file, kCFURLPOSIXPathStyle, false);
-    CGImageDestinationRef idst = CGImageDestinationCreateWithURL(urlRef, type, 1, NULL);
-    CGImageDestinationAddImage(idst, screenShot, NULL );
+    CFURLRef url = CFURLCreateWithFileSystemPath(NULL, CFSTR("../res/screenshot.png"), kCFURLPOSIXPathStyle, false);
+    
+    if (!url){
+        cout << "failed to create URL\n";
+        return 0;
+    }
+
+    CGImageDestinationRef idst = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, NULL);
+    CGImageDestinationAddImage(idst, screenshot, NULL);
     CGImageDestinationFinalize(idst);
 
+    return 0;
 }
