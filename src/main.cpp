@@ -4,6 +4,15 @@
 #import <ApplicationServices/ApplicationServices.h>
 #include <stdlib.h>
 
+#define COLS 8
+#define ROWS 6
+
+float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2){
+    float deltaX = pt1.x - pt2.x;
+    float deltaY = pt1.y - pt2.y;
+    return (deltaX * deltaX) + (deltaY * deltaY);
+}
+
 int main( int argc, char** argv) {
 
     //Creating a window to display everything
@@ -75,12 +84,35 @@ int main( int argc, char** argv) {
         //Skip all frames except for the one when the wall is at certain position
         cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3, croppedImage.rows / 3));
         cv::Vec3b bgrPixel4 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3));
+        circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        
+        /*
+        std::cout << static_cast<int>(bgrPixel3[0]) << std::endl;
+        std::cout << static_cast<int>(bgrPixel3[1]) << std::endl;
+        std::cout << static_cast<int>(bgrPixel3[2]) << std::endl;
 
-        if (static_cast<int>(bgrPixel3[0]) != 223 && static_cast<int>(bgrPixel3[1]) != 223 && 
-            static_cast<int>(bgrPixel3[2]) != 223 && static_cast<int>(bgrPixel4[0]) != 223 && 
-            static_cast<int>(bgrPixel4[1]) != 223 && static_cast<int>(bgrPixel4[2]) != 223) {
+        std::cout << static_cast<int>(bgrPixel4[0]) << std::endl;
+        std::cout << static_cast<int>(bgrPixel4[1]) << std::endl;
+        std::cout << static_cast<int>(bgrPixel4[2]) << std::endl;
+        */
+
+        if (static_cast<int>(bgrPixel3[0]) != 222 && static_cast<int>(bgrPixel3[1]) != 222 && 
+            static_cast<int>(bgrPixel3[2]) != 222 && static_cast<int>(bgrPixel4[0]) != 222 && 
+            static_cast<int>(bgrPixel4[1]) != 222 && static_cast<int>(bgrPixel4[2]) != 222) {
                 continue;
         }
+
+        //Crop the wall
+        cv::Point c1(croppedImage.cols / 4, croppedImage.rows / 4.8);
+        cv::Point c2(croppedImage.cols / 4, croppedImage.rows / 2.8);
+        cv::Point c3(croppedImage.cols * 2.8 / 4, croppedImage.rows / 4.8);
+        cv::Point c4(croppedImage.cols * 2.8 / 4, croppedImage.rows / 2.8);
+
+        circle(croppedImage, c1, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
+        circle(croppedImage, c2, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
+        circle(croppedImage, c3, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
+        circle(croppedImage, c4, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
 
         //Convert Image to Gray
         cv::Mat grayImage;
@@ -98,6 +130,18 @@ int main( int argc, char** argv) {
         cv::Mat blurredImage;
         cv::GaussianBlur(grayImage, blurredImage, cv::Size(3, 3), 0, 0 );
 
+        /*//Detect circles
+        cv::vector<cv::Vec3f> circles;
+        HoughCircles(grayImage, circles, CV_HOUGH_GRADIENT, 1, 25, 200, 100);
+
+        for( size_t i = 0; i < circles.size(); i++ ){
+
+            cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+
+            circle(croppedImage, center, 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+
+        }*/
+
         //Canny Edge Detection
 		cv::Mat cannyImage;
 		Canny(blurredImage, cannyImage, 200, 100);
@@ -105,6 +149,16 @@ int main( int argc, char** argv) {
         //Find contours after using canny edge detection
         cv::vector<cv::vector<cv::Point> > contours;
         cv::findContours(cannyImage, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+        cv::Point cr1(0, 0);
+        cv::Point cr2(0, 0);
+        cv::Point cr3(0, 0);
+        cv::Point cr4(0, 0);
+
+        float distance1 = 999999;
+        float distance2 = 999999;
+        float distance3 = 999999;
+        float distance4 = 999999;
 
         //Find Polygons
         for (int i = 0; i < contours.size(); i++){
@@ -127,7 +181,31 @@ int main( int argc, char** argv) {
 
             //Paint points
             for (int i = 0; i < approx.size(); i++) {
-                circle(croppedImage, approx[i], 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+                float distance11 = CalculateDistance(c1, approx[i]);
+                float distance22 = CalculateDistance(c2, approx[i]);
+                float distance33 = CalculateDistance(c3, approx[i]);
+                float distance44 = CalculateDistance(c4, approx[i]);
+
+                if (distance11 < distance1) {
+                    distance1 = distance11;
+                    cr1 = approx[i];
+                }
+
+                if (distance22 < distance2) {
+                    distance2 = distance22;
+                    cr2 = approx[i];
+                }
+
+                if (distance33 < distance3) {
+                    distance3 = distance33;
+                    cr3 = approx[i];
+                }
+
+                if (distance44 < distance4) {
+                    distance4 = distance44;
+                    cr4 = approx[i];
+                }
+
             }
 
             //Draw polygon
@@ -139,16 +217,43 @@ int main( int argc, char** argv) {
 
         }
 
-        bool grid[6][6];
+        bool grid[ROWS][COLS];
 
-        for (int i = 0; i < 6; i++) {
-            std::cout << "-------------------\n|";
-            for (int l = 0; l < 6; l++) {
-                std::cout << grid[i][l] << " |";
+        double distHorizontal = (cr3.x - cr1.x) / static_cast<double>(COLS);
+        double distVertical = (cr2.y - cr1.y) / static_cast<double>(ROWS);
+
+        double xWallPos = cr1.x - distHorizontal / 2.0;
+        double yWallPos = cr1.y + distVertical / 2.0;
+
+        for (int i = 0; i < ROWS; i++) {
+            for (int l = 0; l < COLS; l++) {
+                xWallPos += distHorizontal;
+                cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
+                std::cout << static_cast<int>(bgrPixel[0]) << std::endl;
+                std::cout << static_cast<int>(bgrPixel[1]) << std::endl;
+                std::cout << static_cast<int>(bgrPixel[2]) << std::endl;
+
+                grid[i][l] = (static_cast<int>(bgrPixel[0]) == static_cast<int>(bgrPixel[1]) && static_cast<int>(bgrPixel[0]) == static_cast<int>(bgrPixel[2]));
+
+                circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
+            }
+            xWallPos = cr1.x - distHorizontal / 2.0;
+            yWallPos += distVertical;
+        }
+
+        circle(croppedImage, cr1, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+        circle(croppedImage, cr2, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+        circle(croppedImage, cr3, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+        circle(croppedImage, cr4, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+
+        for (int i = 0; i < ROWS; i++) {
+            std::cout << "---------------------------------\n|";
+            for (int l = 0; l < COLS; l++) {
+                std::cout << " " << grid[i][l] << " |";
             }
             std::cout << "\n";
         }
-        std::cout << "-------------------\n\n\n";
+        std::cout << "---------------------------------\n\n\n";
 
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
