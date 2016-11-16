@@ -60,7 +60,9 @@ int main( int argc, char** argv) {
 
         //Skip the frame if we are not playing
         cv::Vec3b bgrPixel1 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 9, croppedImage.rows / 23));
-        cv::Vec3b bgrPixel2 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 2.935, croppedImage.rows / 23));
+        cv::Vec3b bgrPixel2 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 2.8, croppedImage.rows / 28.5));
+        //circle(croppedImage, cv::Point(croppedImage.cols / 9, croppedImage.rows / 23), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+      	//circle(croppedImage, cv::Point(croppedImage.cols / 2.8, croppedImage.rows / 28.5), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
 
         if (n == 1) {
             testPixel1 = bgrPixel1;
@@ -68,7 +70,7 @@ int main( int argc, char** argv) {
             continue;
         }
 
-        if (testPixel1 == bgrPixel1) continue;
+        if (testPixel1 == bgrPixel1 && testPixel2 == bgrPixel2) continue;
 
         //Skip all frames except for the one when the wall is at certain position
         cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3, croppedImage.rows / 3));
@@ -123,10 +125,10 @@ int main( int argc, char** argv) {
             //Skip if not a quadrilateral
             //if (approx.size() != 4) continue;
 
-             //Paint points
-             for (int i = 0; i < approx.size(); i++) {
-              	circle(croppedImage, approx[i], 1, cv::Scalar(0, 0, 255), 8, 1, 0);
-             }
+            //Paint points
+            for (int i = 0; i < approx.size(); i++) {
+                circle(croppedImage, approx[i], 1, cv::Scalar(0, 0, 255), 8, 1, 0);
+            }
 
             //Draw polygon
 			// for (int i = 0; i < approx.size() - 1; i++) {
