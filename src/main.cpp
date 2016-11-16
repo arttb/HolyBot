@@ -84,8 +84,8 @@ int main( int argc, char** argv) {
         //Skip all frames except for the one when the wall is at certain position
         cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3, croppedImage.rows / 3));
         cv::Vec3b bgrPixel4 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3));
-        circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
-        circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        //circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        //circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
         
         /*
         std::cout << static_cast<int>(bgrPixel3[0]) << std::endl;
@@ -233,12 +233,12 @@ int main( int argc, char** argv) {
                 std::cout << static_cast<int>(bgrPixel[1]) << std::endl;
                 std::cout << static_cast<int>(bgrPixel[2]) << std::endl;
 
-                grid[i][l] = (static_cast<int>(bgrPixel[0]) == static_cast<int>(bgrPixel[1]) && static_cast<int>(bgrPixel[0]) == static_cast<int>(bgrPixel[2]));
+                grid[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
 
                 circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
             }
             xWallPos = cr1.x - distHorizontal / 2.0;
-            yWallPos += distVertical;
+            yWallPos += distVertical - distVertical / 60 * (ROWS - i);
         }
 
         circle(croppedImage, cr1, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
