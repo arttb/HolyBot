@@ -179,8 +179,8 @@ int main( int argc, char** argv) {
             //Skip if not a quadrilateral
             //if (approx.size() != 4) continue;
 
-            //Paint points
             for (int i = 0; i < approx.size(); i++) {
+                                circle(croppedImage, approx[i], 1, cv::Scalar(255, 0, 255), 8, 1, 0);
                 float distance11 = CalculateDistance(c1, approx[i]);
                 float distance22 = CalculateDistance(c2, approx[i]);
                 float distance33 = CalculateDistance(c3, approx[i]);
@@ -238,7 +238,7 @@ int main( int argc, char** argv) {
                 circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
             }
             xWallPos = cr1.x - distHorizontal / 2.0;
-            yWallPos += distVertical - distVertical / 60 * (ROWS - i);
+            yWallPos += distVertical - distVertical / 50 * (ROWS - i);
         }
 
         circle(croppedImage, cr1, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
