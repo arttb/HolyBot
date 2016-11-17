@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #define COLS 8
-#define ROWS 6
+#define ROWS 5
 
 float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2){
     float deltaX = pt1.x - pt2.x;
@@ -97,9 +97,9 @@ int main( int argc, char** argv) {
         std::cout << static_cast<int>(bgrPixel4[2]) << std::endl;
         */
 
-        if (static_cast<int>(bgrPixel3[0]) != 222 && static_cast<int>(bgrPixel3[1]) != 222 && 
-            static_cast<int>(bgrPixel3[2]) != 222 && static_cast<int>(bgrPixel4[0]) != 222 && 
-            static_cast<int>(bgrPixel4[1]) != 222 && static_cast<int>(bgrPixel4[2]) != 222) {
+        if (static_cast<int>(bgrPixel3[0]) < 222 && static_cast<int>(bgrPixel3[1]) < 222 && 
+            static_cast<int>(bgrPixel3[2]) < 222 && static_cast<int>(bgrPixel4[0]) < 222 && 
+            static_cast<int>(bgrPixel4[1]) < 222 && static_cast<int>(bgrPixel4[2]) < 222) {
                 continue;
         }
 
@@ -217,28 +217,25 @@ int main( int argc, char** argv) {
 
         }
 
-        bool grid[ROWS][COLS];
+        bool gridWall[ROWS][COLS];
 
         double distHorizontal = (cr3.x - cr1.x) / static_cast<double>(COLS);
         double distVertical = (cr2.y - cr1.y) / static_cast<double>(ROWS);
 
         double xWallPos = cr1.x - distHorizontal / 2.0;
-        double yWallPos = cr1.y + distVertical / 2.0;
+        double yWallPos = cr1.y + distVertical / 2.0 - distVertical / 15;
 
         for (int i = 0; i < ROWS; i++) {
             for (int l = 0; l < COLS; l++) {
                 xWallPos += distHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
-                std::cout << static_cast<int>(bgrPixel[0]) << std::endl;
-                std::cout << static_cast<int>(bgrPixel[1]) << std::endl;
-                std::cout << static_cast<int>(bgrPixel[2]) << std::endl;
 
-                grid[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
+                gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
 
                 circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
             }
             xWallPos = cr1.x - distHorizontal / 2.0;
-            yWallPos += distVertical - distVertical / 50 * (ROWS - i);
+            yWallPos = cr1.y + distVertical / 2.0 + distVertical * (i + 1) - distVertical / 25 * (ROWS - i);
         }
 
         circle(croppedImage, cr1, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
@@ -246,10 +243,11 @@ int main( int argc, char** argv) {
         circle(croppedImage, cr3, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
         circle(croppedImage, cr4, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
 
+        std::cout << "Wall grid:\n";
         for (int i = 0; i < ROWS; i++) {
             std::cout << "---------------------------------\n|";
             for (int l = 0; l < COLS; l++) {
-                std::cout << " " << grid[i][l] << " |";
+                std::cout << " " << gridWall[i][l] << " |";
             }
             std::cout << "\n";
         }
