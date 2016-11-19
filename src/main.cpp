@@ -109,10 +109,9 @@ int main( int argc, char** argv) {
         cv::Point c3(croppedImage.cols * 2.8 / 4, croppedImage.rows / 4.8);
         cv::Point c4(croppedImage.cols * 2.8 / 4, croppedImage.rows / 2.8);
 
-        circle(croppedImage, c1, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
-        circle(croppedImage, c2, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
-        circle(croppedImage, c3, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
-        circle(croppedImage, c4, 1, cv::Scalar(0, 255, 255), 8, 1, 0);
+        //Crop the hero wall
+        cv::Point h1(croppedImage.cols / 7, croppedImage.rows * 4.4 / 6);
+        cv::Point h2(croppedImage.cols * 5.65 / 7, croppedImage.rows * 4.4 / 6);
 
         //Convert Image to Gray
         cv::Mat grayImage;
@@ -180,7 +179,6 @@ int main( int argc, char** argv) {
             //if (approx.size() != 4) continue;
 
             for (int i = 0; i < approx.size(); i++) {
-                                circle(croppedImage, approx[i], 1, cv::Scalar(255, 0, 255), 8, 1, 0);
                 float distance11 = CalculateDistance(c1, approx[i]);
                 float distance22 = CalculateDistance(c2, approx[i]);
                 float distance33 = CalculateDistance(c3, approx[i]);
@@ -219,29 +217,22 @@ int main( int argc, char** argv) {
 
         bool gridWall[ROWS][COLS];
 
-        double distHorizontal = (cr3.x - cr1.x) / static_cast<double>(COLS);
-        double distVertical = (cr2.y - cr1.y) / static_cast<double>(ROWS);
+        double wallDistHorizontal = (cr3.x - cr1.x) / static_cast<double>(COLS);
+        double wallDistVertical = (cr2.y - cr1.y) / static_cast<double>(ROWS);
 
-        double xWallPos = cr1.x - distHorizontal / 2.0;
-        double yWallPos = cr1.y + distVertical / 2.0 - distVertical / 15;
+        double xWallPos = cr1.x - wallDistHorizontal / 2.0;
+        double yWallPos = cr1.y + wallDistVertical / 2.0 - wallDistVertical / 15;
 
         for (int i = 0; i < ROWS; i++) {
             for (int l = 0; l < COLS; l++) {
-                xWallPos += distHorizontal;
+                xWallPos += wallDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
 
                 gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
-
-                circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
             }
-            xWallPos = cr1.x - distHorizontal / 2.0;
-            yWallPos = cr1.y + distVertical / 2.0 + distVertical * (i + 1) - distVertical / 25 * (ROWS - i);
+            xWallPos = cr1.x - wallDistHorizontal / 2.0;
+            yWallPos = cr1.y + wallDistVertical / 2.0 + wallDistVertical * (i + 1) - wallDistVertical / 25 * (ROWS - i);
         }
-
-        circle(croppedImage, cr1, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
-        circle(croppedImage, cr2, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
-        circle(croppedImage, cr3, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
-        circle(croppedImage, cr4, 1, cv::Scalar(0, 0, 255), 8, 1, 0);
 
         std::cout << "Wall grid:\n";
         for (int i = 0; i < ROWS; i++) {
@@ -252,6 +243,44 @@ int main( int argc, char** argv) {
             std::cout << "\n";
         }
         std::cout << "---------------------------------\n\n\n";
+
+        int gridHero[ROWS][COLS];
+
+        double heroDistHorizontal = (h2.x - h1.x) / static_cast<double>(COLS - 2);
+        double heroDistVertical = croppedImage.rows / 17;
+
+        double xHeroPos = h1.x - heroDistHorizontal / 2.0;
+        double yHeroPos = h1.y - heroDistVertical / 2.0;
+
+        for (int i = 0; i < ROWS; i++) {
+            for (int l = 0; l < COLS - 2; l++) {
+                xHeroPos += heroDistHorizontal;
+                cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xHeroPos, yHeroPos));
+                
+                if ((static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200)) {
+                    gridHero[ROWS - i - 1][l] = 1;
+                }else if ((static_cast<int>(bgrPixel[0]) > 40 && static_cast<int>(bgrPixel[0]) < 50 && static_cast<int>(bgrPixel[1]) > 185 && static_cast<int>(bgrPixel[1]) < 195 && static_cast<int>(bgrPixel[2]) > 245 && static_cast<int>(bgrPixel[2]) < 255)) {
+                    gridHero[ROWS - i - 1][l] = 2;
+                }else{
+                    gridHero[ROWS - i - 1][l] = 0;
+                }
+
+                circle(croppedImage, cv::Point(xHeroPos, yHeroPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
+            }
+            xHeroPos = h1.x - heroDistHorizontal / 2.0;
+            yHeroPos = h1.y - heroDistVertical / 2.0 - heroDistVertical * (i + 1);
+        }
+
+        std::cout << "Hero grid:\n";
+        for (int i = 0; i < ROWS; i++) {
+            std::cout << "-------------------------\n|";
+            for (int l = 0; l < COLS - 2; l++) {
+                std::cout << " " << gridHero[i][l] << " |";
+            }
+
+            std::cout << "\n";
+        }
+        std::cout << "-------------------------\n\n\n";
 
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
