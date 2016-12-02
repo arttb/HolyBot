@@ -24,22 +24,24 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
                 if(given[i][j] == 2) {
                     playerPosition[0] = i;
                     playerPosition[1] = j;
+                    foundPlayerBlock = true;
                 }
             }
-            if(i == (ROWS - 1) && given[i][j] != 1)
+            if(i == (ROWS - 1) && given[i][j] == 0)
                 given[i][j] = 3;
             else if(given[i][j] == 1) {
-                given[(i == ROW_MAX) ? ROW_MAX : i+1][j] = (given[i][j] != 1) ? 3 : 1;
-                given[(i == 0) ? 0 : i-1][j] = (given[i][j] != 1) ? 3 : 1;
-                given[i][(j == COL_MAX) ? COL_MAX : j+1] = (given[i][j] != 1) ? 3 : 1;
-                given[i][(j == 0) ? 0 : j-1] = (given[i][j] != 1) ? 3 : 1;
+                given[(i == ROW_MAX) ? ROW_MAX : i+1][j] = (given[i][j] == 0) ? 3 : given[(i == ROW_MAX) ? ROW_MAX : i+1][j];
+                given[(i == 0) ? 0 : i-1][j] = (given[i][j] == 0) ? 3 : given[(i == 0) ? 0 : i-1][j];
+                given[i][(j == COL_MAX) ? COL_MAX : j+1] = (given[i][j] == 0) ? 3 : given[i][(j == COL_MAX) ? COL_MAX : j+1];
+                given[i][(j == 0) ? 0 : j-1] = (given[i][j] == 0) ? 3 : given[i][(j == 0) ? 0 : j-1];
             }
         }
     }
 
+    std::cout << std::endl;
     for(int i = 0; i < ROWS; i++) {
         for(int j = 0; j < COLS; j++)
-            std::cout << j << "\t";
+            std::cout << given[i][j] << "\t";
         std::cout << std::endl;
     }
 
@@ -51,7 +53,7 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         int dir = (spotCol < playerPosition[1]) ? -1 : 1;
         int startPoint = (dir < 0) ? spotCol : playerPosition[1];
         int endPoint = (dir < 0) ? playerPosition[1] : spotCol;
-        for(int j = startPoint; j < endPoint; j++) {
+        for(int j = startPoint; j < endPoint; j += dir) {
             for(int k = 0; k < ROWS; k++) {
                 if(given[k][j] == 3)
                     totalSteps += dir;
@@ -307,7 +309,8 @@ int main( int argc, char** argv) {
             for (int l = 0; l < COLS; l++) {
                 xWallPos += wallDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
-
+                for(int z = 0; z < 3; z++) std::cout << "(" << i << ", " << l << ", " << z << ") BGR Value: " << static_cast<int>(bgrPixel[z]) << std::endl;
+                circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
                 gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
             }
             xWallPos = cr1.x - wallDistHorizontal / 2.0;
@@ -336,10 +339,10 @@ int main( int argc, char** argv) {
             for (int l = 1; l < COLS - 1; l++) {
                 xHeroPos += heroDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xHeroPos, yHeroPos));
-                
+
                 if ((static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200)) {
                     gridHero[ROWS - i - 1][l] = 1;
-                }else if ((static_cast<int>(bgrPixel[0]) > 40 && static_cast<int>(bgrPixel[0]) < 50 && static_cast<int>(bgrPixel[1]) > 185 && static_cast<int>(bgrPixel[1]) < 195 && static_cast<int>(bgrPixel[2]) > 245 && static_cast<int>(bgrPixel[2]) < 255)) {
+                }else if ((static_cast<int>(bgrPixel[0]) > 45 && static_cast<int>(bgrPixel[0]) < 65 && static_cast<int>(bgrPixel[1]) > 185 && static_cast<int>(bgrPixel[1]) < 195 && static_cast<int>(bgrPixel[2]) > 245 && static_cast<int>(bgrPixel[2]) < 255)) {
                     gridHero[ROWS - i - 1][l] = 2;
                 }else{
                     gridHero[ROWS - i - 1][l] = 0;
