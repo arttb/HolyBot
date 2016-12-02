@@ -6,11 +6,56 @@
 
 #define COLS 8
 #define ROWS 5
+#define ROW_MAX ROWS-1
+#define COL_MAX COLS-1
 
 float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2){
     float deltaX = pt1.x - pt2.x;
     float deltaY = pt1.y - pt2.y;
     return (deltaX * deltaX) + (deltaY * deltaY);
+}
+
+int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
+    bool foundPlayerBlock = false;
+    int playerPosition[2];
+    for(int i = 0; i < ROWS; i++) {
+        for(int j = 0; j < COLS; j++) {
+            if(!foundPlayerBlock) {
+                if(given[i][j] == 2) {
+                    playerPosition[0] = i;
+                    playerPosition[1] = j;
+                }
+            }
+            if(i == (ROWS - 1) && given[i][j] != 1)
+                given[i][j] = 3;
+            else if(given[i][j] == 1) {
+                given[(i == ROW_MAX) ? ROW_MAX : i+1][j] = (given[i][j] != 1) ? 3 : 1;
+                given[(i == 0) ? 0 : i-1][j] = (given[i][j] != 1) ? 3 : 1;
+                given[i][(j == COL_MAX) ? COL_MAX : j+1] = (given[i][j] != 1) ? 3 : 1;
+                given[i][(j == 0) ? 0 : j-1] = (given[i][j] != 1) ? 3 : 1;
+            }
+        }
+    }
+
+    int shortestPath = 100;
+    for(int i = 0; i < spot.size(); i++) {
+        int totalSteps = 0;
+        int spotRow = spot.at(i).at(0);
+        int spotCol = spot.at(i).at(1);
+        int dir = (spotCol < playerPosition[1]) ? -1 : 1;
+        int startPoint = (dir < 0) ? spotCol : playerPosition[1];
+        int endPoint = (dir < 0) ? playerPosition[1] : spotCol;
+        for(int j = startPoint; j < endPoint; j++) {
+            for(int k = 0; k < ROWS; k++) {
+                if(given[k][j] == 3)
+                    totalSteps += dir;
+            }
+        }
+        shortestPath = (abs(totalSteps) < abs(shortestPath)) ? totalSteps : shortestPath;
+    }
+
+    return shortestPath;
+
 }
 
 int main( int argc, char** argv) {

@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/artemiygalkin/Programming/HolyBot/src/main.cpp
+/Users/Fathy/Documents/HolyBot/src/main.cpp
 iostream
 -
 opencv2/highgui/highgui.hpp
