@@ -7,10 +7,38 @@
 #define COLS 8
 #define ROWS 5
 
-float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2){
+float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
     float deltaX = pt1.x - pt2.x;
     float deltaY = pt1.y - pt2.y;
     return (deltaX * deltaX) + (deltaY * deltaY);
+}
+
+cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COLS]) {
+    cv::vector<cv::vector<int> > availableHoles;
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int l = 0; l < COLS; l++) {
+
+            if (wall[i][l] == 0 && hero[i][l] == 0) {
+                
+                if ((i < ROWS - 1 && wall[i + 1][l] == 1) || 
+                    (i > 0 && wall[i - 1][l] == 1) || 
+                    (l < COLS - 1 && wall[i][l + 1] == 1) || 
+                    (l > 0 && wall[i][l - 1] == 1)) {
+
+                    cv::vector<int> coordinates;
+                    coordinates.push_back(i);
+                    coordinates.push_back(l);
+                    availableHoles.push_back(coordinates);
+
+                }
+
+            }
+
+        }
+    }
+
+    return availableHoles;
 }
 
 int main( int argc, char** argv) {
@@ -215,7 +243,7 @@ int main( int argc, char** argv) {
 
         }
 
-        bool gridWall[ROWS][COLS];
+        int gridWall[ROWS][COLS];
 
         double wallDistHorizontal = (cr3.x - cr1.x) / static_cast<double>(COLS);
         double wallDistVertical = (cr2.y - cr1.y) / static_cast<double>(ROWS);
@@ -253,7 +281,7 @@ int main( int argc, char** argv) {
         double yHeroPos = h1.y - heroDistVertical / 2.0;
 
         for (int i = 0; i < ROWS; i++) {
-            for (int l = 0; l < COLS - 2; l++) {
+            for (int l = 1; l < COLS - 1; l++) {
                 xHeroPos += heroDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xHeroPos, yHeroPos));
                 
@@ -265,7 +293,7 @@ int main( int argc, char** argv) {
                     gridHero[ROWS - i - 1][l] = 0;
                 }
 
-                circle(croppedImage, cv::Point(xHeroPos, yHeroPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
+                //circle(croppedImage, cv::Point(xHeroPos, yHeroPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
             }
             xHeroPos = h1.x - heroDistHorizontal / 2.0;
             yHeroPos = h1.y - heroDistVertical / 2.0 - heroDistVertical * (i + 1);
@@ -273,14 +301,22 @@ int main( int argc, char** argv) {
 
         std::cout << "Hero grid:\n";
         for (int i = 0; i < ROWS; i++) {
-            std::cout << "-------------------------\n|";
-            for (int l = 0; l < COLS - 2; l++) {
+            std::cout << "---------------------------------\n|";
+            for (int l = 0; l < COLS; l++) {
                 std::cout << " " << gridHero[i][l] << " |";
             }
 
             std::cout << "\n";
         }
-        std::cout << "-------------------------\n\n\n";
+        std::cout << "---------------------------------\n\n\n";
+
+
+        cv::vector<cv::vector<int> > availableHoles = findAvailableHoles(gridWall, gridHero);
+
+        for (int i = 0; i < (int)availableHoles.size(); i++) {
+            std::cout << availableHoles.at(i).at(0) << " ";
+            std::cout << availableHoles.at(i).at(1) << std::endl;
+        }
 
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
