@@ -38,12 +38,15 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         }
     }
 
-    std::cout << std::endl;
-    for(int i = 0; i < ROWS; i++) {
-        for(int j = 0; j < COLS; j++)
-            std::cout << given[i][j] << "\t";
-        std::cout << std::endl;
-    }
+    std::cout << "\nPath grid:\n";
+        for (int i = 0; i < ROWS; i++) {
+            std::cout << "---------------------------------\n|";
+            for (int l = 0; l < COLS; l++) {
+                std::cout << " " << given[i][l] << " |";
+            }
+            std::cout << "\n";
+        }
+    std::cout << "---------------------------------\n\n\n";
 
     int shortestPath = 100;
     for(int i = 0; i < spot.size(); i++) {
