@@ -66,13 +66,15 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
     }
 
     //Print out the modified path matrix.
-    std::cout << std::endl << "{ ";
-    for(int i = 0; i < ROWS; i++) {
-        for(int j = 0; j < COLS; j++)
-            std::cout << givenCopy[i][j] << "\t";
-        std::cout << std::endl;
-    }
-    std::cout << " }" << std::endl;
+    std::cout << "\nPath grid:\n";
+        for (int i = 0; i < ROWS; i++) {
+            std::cout << "---------------------------------\n|";
+            for (int l = 0; l < COLS; l++) {
+                std::cout << " " << given[i][l] << " |";
+            }
+            std::cout << "\n";
+        }
+    std::cout << "---------------------------------\n\n\n";
 
     //Find the shortest path to an empty spot.
     //Initialize the variable with some large number.
