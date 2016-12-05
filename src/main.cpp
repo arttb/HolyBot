@@ -6,8 +6,6 @@
 
 #define COLS 8
 #define ROWS 5
-#define ROW_MAX ROWS-1
-#define COL_MAX COLS-1
 
 float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
     float deltaX = pt1.x - pt2.x;
@@ -41,6 +39,7 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
                     foundPlayerBlock = true;
                 }
             }
+
             //Mark all empty blocks on the bottom row as possible paths.
             if(i == (ROWS - 1) && givenCopy[i][j] == 0)
                 givenCopy[i][j] = 3;
@@ -49,15 +48,15 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
             else if(givenCopy[i][j] == 1) {
                 
                 //Mark the right block.
-                givenCopy[(i == ROW_MAX) ? ROW_MAX : i+1][j] = (givenCopy[(i == ROW_MAX) ? ROW_MAX : i+1][j] == 0) ? 3 : 
-                                                                    givenCopy[(i == ROW_MAX) ? ROW_MAX : i+1][j];
+                givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j] = (givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j] == 0) ? 3 : 
+                                                                    givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j];
                 
                 //Mark the left block.
-                givenCopy[(i == 0) ? 0 : i-1][j] = (givenCopy[(i == 0) ? 0 : i-1][j] == 0) ? 3 : givenCopy[(i == 0) ? 0 : i-1][j];
+                givenCopy[(i == 0) ? 0 : i - 1][j] = (givenCopy[(i == 0) ? 0 : i - 1][j] == 0) ? 3 : givenCopy[(i == 0) ? 0 : i - 1][j];
                 
                 //Mark the top block.
-                givenCopy[i][(j == COL_MAX) ? COL_MAX : j+1] = (givenCopy[i][(j == COL_MAX) ? COL_MAX : j+1] == 0) ? 3 : 
-                                                                    givenCopy[i][(j == COL_MAX) ? COL_MAX : j+1];
+                givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1] = (givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1] == 0) ? 3 : 
+                                                                    givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1];
 
                 //Mark the bottom block.
                 givenCopy[i][(j == 0) ? 0 : j-1] = (givenCopy[i][(j == 0) ? 0 : j-1] == 0) ? 3 : givenCopy[i][(j == 0) ? 0 : j-1];
@@ -94,10 +93,19 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         int endPoint = (dir < 0) ? playerPosition[1] : spotCol;
 
         //Count all of the path markers to the empty spot.
-        for(int j = startPoint; j < endPoint; j += dir) {
-            for(int k = 0; k < ROWS; k++) {
-                if(given[k][j] == 3)
-                    totalSteps += dir;
+        if(dir > 0) {
+            for(int j = startPoint; j < endPoint; j += dir) {
+                for(int k = 0; k < ROWS; k++) {
+                    if(given[k][j] == 3)
+                        totalSteps += dir;
+                }
+            }
+        } else {
+            for(int j = startPoint; j > endPoint; j += dir) {
+                for(int k = 0; k < ROWS; k++) {
+                    if(given[k][j] == 3)
+                        totalSteps += dir;
+                }
             }
         }
 
@@ -417,13 +425,13 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
 
+        std::cout << "Number of steps to take: " << steps(gridHero, findAvailableHoles(gridWall, gridHero)) << std::endl;
+
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
         break;
         //Waitkey delay for HighGUI to process event loops. (Important for the display window)
 		if (cv::waitKey(1) >= 0) break;
-
-        std::cout << "Number of steps to take: " << steps(gridHero, findAvailableHoles(gridWall, gridHero)) << std::endl;
 
     }
 
