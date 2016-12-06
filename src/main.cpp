@@ -54,119 +54,84 @@ float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
     return (deltaX * deltaX) + (deltaY * deltaY);
 }
 
-int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
+void markAdjacentSpaces(int g[ROWS][COLS], int r, int c) {
 
-    //A copy of the given array.
-    int givenCopy[ROWS][COLS];
+    //Mark top.
+    if(r != 0) {
+        if(g[r-1][c] == 0)
+            g[r-1][c] = 3;
+    }
 
-    //Copy data from given array to copy.
+    //Mark bottom.
+    if(r != ROWS-1) {
+        if(g[r+1][c] == 0)
+            g[r+1][c] = 3;
+    }
+
+    //Mark left.
+    if(c != 0) {
+        if(g[r][c-1] == 0)
+            g[r][c-1] = 3;
+    }
+    //Mark right.
+    if(c != COLS-1) {
+        if(g[r][c+1] == 0)
+            g[r][c+1] = 3;
+    }
+
+}
+
+bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+
+}
+
+bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+    int r = pos[0];
+    int c = pos[1];
+    
+    //Start left.
+    
+}
+
+int findShortestPath(int given[ROWS][COLS], cv::vector<cv::vector<int> > spots) {
+
+    //Steps.
+    int steps;
+
+    //Player position.
+    int playerpos[2];
+
+    //Make a copy of the given array.
+    int gc[ROWS][COLS];
+    for(int i = 0; i < ROWS; i++)
+        for(int j = 0; j < COLS; j++) {
+            gc[i][j] = given[i][j];
+            if(gc[i][j] == 2) {
+                playerpos[0] = i;
+                playerpos[1] = j;
+            }
+        }
+    
+    //Mark empty spots on the bottom row as possible.
+    for(int j = 0; j < COLS)
+        if(gc[ROWS-1][j] == 0)
+            gc[ROWS-1][j] = 3;
+
     for(int i = 0; i < ROWS; i++)
         for(int j = 0; j < COLS; j++)
-            givenCopy[i][j] = given[i][j];
+            if(gc[i][j] == 1)
+                markAdjacentSpaces(gc, i, j);
+    
+    //Pathfinding - left.
+    if(searchLeft(gc, spots, playerpos, steps))
+        return steps;
 
-    //Var to determine if the player block is found and var to record the position.
-    bool foundPlayerBlock = false;
-    int playerPosition[2];
-
-    //Iterate through the entire matrix of the player's given blocks.
-    for(int i = 0; i < ROWS; i++) {
-        for(int j = 0; j < COLS; j++) {
-
-            //Mark the position of the player's block.
-            if(!foundPlayerBlock) {
-                if(givenCopy[i][j] == 2) {
-                    playerPosition[0] = i;
-                    playerPosition[1] = j;
-                    foundPlayerBlock = true;
-                }
-            }
-
-            //Mark all empty blocks on the bottom row as possible paths.
-            if(i == (ROWS - 1) && givenCopy[i][j] == 0)
-                givenCopy[i][j] = 3;
-            
-            //If the block is filled, mark all adjacent blocks as possible paths.
-            else if(givenCopy[i][j] == 1) {
-                
-                //Mark the right block.
-                givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j] = (givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j] == 0) ? 3 : 
-                                                                    givenCopy[(i == ROWS - 1) ? ROWS - 1 : i + 1][j];
-                
-                //Mark the left block.
-                givenCopy[(i == 0) ? 0 : i - 1][j] = (givenCopy[(i == 0) ? 0 : i - 1][j] == 0) ? 3 : givenCopy[(i == 0) ? 0 : i - 1][j];
-                
-                //Mark the top block.
-                givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1] = (givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1] == 0) ? 3 : 
-                                                                    givenCopy[i][(j == COLS - 1) ? COLS - 1 : j+1];
-
-                //Mark the bottom block.
-                givenCopy[i][(j == 0) ? 0 : j-1] = (givenCopy[i][(j == 0) ? 0 : j-1] == 0) ? 3 : givenCopy[i][(j == 0) ? 0 : j-1];
-            }
-        }
-    }
-
-    //Print out the modified path matrix.
-    std::cout << "\nPath grid:\n";
-        for (int i = 0; i < ROWS; i++) {
-            std::cout << "---------------------------------\n|";
-            for (int l = 0; l < COLS; l++) {
-                std::cout << " " << givenCopy[i][l] << " |";
-            }
-            std::cout << "\n";
-        }
-    std::cout << "---------------------------------\n\n\n";
-
-    //Find the shortest path to an empty spot.
-    //Initialize the variable with some large number.
-    int shortestPath = 100;
-    for(int i = 0; i < spot.size(); i++) {
-
-        //Keep track of total steps and empty spot position.
-        int totalSteps = 0;
-        int spotRow = spot.at(i).at(0);
-        int spotCol = spot.at(i).at(1);
-
-        std::cout << "Player position: (" << playerPosition[0] << ", " << playerPosition[1] << ")\n";
-        std::cout << "Spot position: (" << spotRow << ", " << spotCol << ")\n";
-
-        //Determine direction of steps.
-        int dir = (spotCol < playerPosition[1]) ? -1 : 1;
-        cv::string direction = (dir > 0) ? "Right" : "Left";
-
-        std::cout << "Direction: " << direction << std::endl;
-
-
-        //Determine start and end points.
-        int startPoint = (dir < 0) ? spotCol : playerPosition[1];
-        int endPoint = (dir < 0) ? playerPosition[1] : spotCol;
-
-        //Count all of the path markers to the empty spot.
-        if(dir > 0) {
-            for(int j = startPoint; j < endPoint; j += dir) {
-                for(int k = 0; k < ROWS; k++) {
-                    if(givenCopy[k][j] == 3) {
-                        totalSteps += dir;
-                        std::cout << "+1 step right.\n";
-                    }
-                }
-            }
-        } else {
-            for(int j = startPoint; j > endPoint; j += dir) {
-                for(int k = 0; k < ROWS; k++) {
-                    if(givenCopy[k][j] == 3) {
-                        totalSteps += dir;
-                        std::cout << "+1 step left.\n";
-                    }
-                }
-            }
-        }
-
-        //Determine if the found path is shorter than the previously marked one.
-        shortestPath = (abs(totalSteps) < abs(shortestPath)) ? totalSteps : shortestPath;
-    }
-
-    //Return the shortest path.
-    return shortestPath;
+    //Pathfinding - right.
+    if(searchRight(gc, spots, playerpos, steps))
+        return steps;
+    
+    //Not a possible number of steps so you know something's wrong.
+    return 1000;
 
 }
 
