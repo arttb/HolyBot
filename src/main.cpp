@@ -69,7 +69,7 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         for (int i = 0; i < ROWS; i++) {
             std::cout << "---------------------------------\n|";
             for (int l = 0; l < COLS; l++) {
-                std::cout << " " << given[i][l] << " |";
+                std::cout << " " << givenCopy[i][l] << " |";
             }
             std::cout << "\n";
         }
@@ -85,8 +85,15 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         int spotRow = spot.at(i).at(0);
         int spotCol = spot.at(i).at(1);
 
+        std::cout << "Player position: (" << playerPosition[0] << ", " << playerPosition[1] << ")\n";
+        std::cout << "Spot position: (" << spotRow << ", " << spotCol << ")\n";
+
         //Determine direction of steps.
         int dir = (spotCol < playerPosition[1]) ? -1 : 1;
+        cv::string direction = (dir > 0) ? "Right" : "Left";
+
+        std::cout << "Direction: " << direction << std::endl;
+
 
         //Determine start and end points.
         int startPoint = (dir < 0) ? spotCol : playerPosition[1];
@@ -96,15 +103,19 @@ int steps(int given[ROWS][COLS], cv::vector<cv::vector<int> > spot) {
         if(dir > 0) {
             for(int j = startPoint; j < endPoint; j += dir) {
                 for(int k = 0; k < ROWS; k++) {
-                    if(given[k][j] == 3)
+                    if(givenCopy[k][j] == 3) {
                         totalSteps += dir;
+                        std::cout << "+1 step right.\n";
+                    }
                 }
             }
         } else {
             for(int j = startPoint; j > endPoint; j += dir) {
                 for(int k = 0; k < ROWS; k++) {
-                    if(given[k][j] == 3)
+                    if(givenCopy[k][j] == 3) {
                         totalSteps += dir;
+                        std::cout << "+1 step left.\n";
+                    }
                 }
             }
         }
