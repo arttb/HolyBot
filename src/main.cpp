@@ -1,11 +1,52 @@
+
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#import <ApplicationServices/ApplicationServices.h>
 #include <stdlib.h>
+#include <cstdio>
+#include <stdio.h>
+#include <unistd.h>
+
+#import <ApplicationServices/ApplicationServices.h>
 
 #define COLS 8
 #define ROWS 5
+
+extern "C" {
+    bool tapLeft() {
+
+        FILE *file;
+        file = fopen("/dev/cu.usbmodem1421","w");
+
+        if (file == NULL)
+            return false;
+
+        sleep(1);
+        fprintf(file, "%d", 0);
+        
+        fclose(file);
+
+        return true;
+    }
+}
+
+extern "C" {
+    bool tapRight() {
+
+        FILE *file;
+        file = fopen("/dev/cu.usbmodem1421","w");
+
+        if (file == NULL)
+            return false;
+
+        sleep(1);
+        fprintf(file, "%d", 1);
+        
+        fclose(file);
+
+        return true;
+    }
+}
 
 float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
     float deltaX = pt1.x - pt2.x;
