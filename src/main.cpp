@@ -83,12 +83,6 @@ void markAdjacentSpaces(int g[ROWS][COLS], int r, int c) {
 
 bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
 
-    //Left
-    //Top left
-    //Top
-    //bottom
-    //Bottom left
-
     int r = pos[0];
     int c = pos[1];
 
