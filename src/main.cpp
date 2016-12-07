@@ -143,9 +143,9 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
             //Left block is not a possible path, empty, or occupied, something is wrong.
             else return false;
         }
+        //Block is at the leftmost position, left is not an option.
+        return false;
     }
-
-    return false;
 }
 
 bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
@@ -181,7 +181,11 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         //If top block is occupied, something is wrong.                        
                         else return false;
                     }
+                    //Top right is empty but not marked as a path, something is wrong.
+                    else return false;
                 }
+                //At the topmost position and cannot move right, right is not an option.
+                else return false;
             }
             //If right block is empty, check bottom block.
             else if (markedMap[r][c+1] == 0) {
@@ -200,10 +204,14 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         else return false;
                     }   
                 }
+                //Right block is empty but not marked, and player is at topmost row, right is not an option.
+                else return false;
             }
             //Right block is not a possible path, empty, or occupied, something is wrong.
             else return false;
         }
+        //Block is at the rightmost position, right is not an option.
+        return false;
     }
 }
 
