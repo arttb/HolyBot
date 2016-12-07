@@ -82,6 +82,69 @@ void markAdjacentSpaces(int g[ROWS][COLS], int r, int c) {
 }
 
 bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+
+    //Left
+    //Top left
+    //Top
+    //bottom
+    //Bottom left
+
+    int r = pos[0];
+    int c = pos[1];
+
+    steps = 0;
+
+    while(true) {
+        //Check if currently at the spot.
+        for(int i = 0; i < spots.size(); i++)
+            if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
+                return true;
+        if(c != 0) {
+            //Check left block.
+            if(markedMap[r][c-1] == 3) {
+                c--; steps++;
+            }
+            //If left block is occupied, check top left block.
+            else if(markedMap[r][c-1] == 1) {
+                if(r != 0) {
+                    //Check top left.
+                    if(markedMap[r-1][c-1] == 3) {
+                        r--; c--; steps++;
+                    }
+                    //If top left is occupied, check top.
+                    else if(markedMap[r-1][c-1] == 1) {
+                        //Check top.
+                        if(markedMap[r-1][c] == 3) {
+                            r--; steps++;
+                        }
+                        //If top is occupied, something is wrong.
+                        else return false;
+                    }
+                }
+            }
+            //If left block is empty, check bottom.
+            else if(markedMap[r][c-1] == 0) {
+                if(r != ROWS-1) {
+                    //Check bottom.
+                    if(markedMap[r+1][c] == 3) {
+                        r++; steps++;
+                    }
+                    //If bottom is occupied, check bottom left.
+                    else if(markedMap[r+1][c] == 1) {
+                        //Check bottom left.
+                        if(markedMap[r+1][c-1] == 3) {
+                            r++; c--; steps++;
+                        }
+                        //If bottom left is occupied, something is wrong.
+                        else return false;
+                    }
+                }
+            }
+            //Left block is not a possible path, empty, or occupied, something is wrong.
+            else return false;
+        }
+    }
+
     return false;
 }
 
@@ -89,70 +152,55 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
 
     int r = pos[0];
     int c = pos[1];
-    
-    bool foundSpot = false;
 
     steps = 0;
 
     while(true) {
-
         //Check if currently at the spot.
         for(int i = 0; i < spots.size(); i++)
             if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
                 return true;
-
         if(c != COLS-1) {
-
             //Check right block.
             if(markedMap[r][c+1] == 3) {
                 c++; steps++;
             }
-
             //If right block is occupied, check top right.
             else if (markedMap[r][c+1] == 1) {
                 if(r != 0) {
-
                     //Check top right.
                     if(markedMap[r-1][c+1] == 3) {
                         c++; r--; steps++;
-                    
+                    }
                     //If top right block is occupied, check top.
-                    } else if (markedMap[r-1][c+1] == 1) {
-
+                    else if (markedMap[r-1][c+1] == 1) {
                         //Check top block.
                         if(markedMap[r-1][c] == 3) {
                             r--; steps++;
-                        } 
-
+                        }
                         //If top block is occupied, something is wrong.                        
                         else return false;
                     }
                 }
-            
+            }
             //If right block is empty, check bottom block.
-            } else if (markedMap[r][c+1] == 0) {
+            else if (markedMap[r][c+1] == 0) {
                 if (r != ROWS-1) {
-
                     //Check bottom block.
                     if (markedMap[r+1][c] == 3) {
                         r++; steps++;
                     }
-                    
                     //If bottom block is occupied, check bottom right block.
                     else if (markedMap[r+1][c] == 1) {
-
                         //Check bottom right block.
                         if (markedMap[r+1][c+1] == 3) {
                             r++; c++; steps++;
-                        } 
-                        
+                        }
                         //If bottom right block is occupied, something is wrong.
                         else return false;
-                    }
-                    
+                    }   
                 }
             }
-
             //Right block is not a possible path, empty, or occupied, something is wrong.
             else return false;
         }
