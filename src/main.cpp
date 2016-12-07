@@ -120,7 +120,9 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
                         //If top is occupied, something is wrong.
                         else return false;
                     }
+                    else return false;
                 }
+                else return false;
             }
             //If left block is empty, check bottom.
             else if(markedMap[r][c-1] == 0) {
@@ -138,12 +140,12 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
                         //If bottom left is occupied, something is wrong.
                         else return false;
                     }
+                    else return false;
                 }
+                else return false;
             }
-            //Left block is not a possible path, empty, or occupied, something is wrong.
             else return false;
         }
-        //Block is at the leftmost position, left is not an option.
         return false;
     }
 }
@@ -177,14 +179,11 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         //Check top block.
                         if(markedMap[r-1][c] == 3) {
                             r--; steps++;
-                        }
-                        //If top block is occupied, something is wrong.                        
+                        }                     
                         else return false;
                     }
-                    //Top right is empty but not marked as a path, something is wrong.
                     else return false;
                 }
-                //At the topmost position and cannot move right, right is not an option.
                 else return false;
             }
             //If right block is empty, check bottom block.
@@ -200,17 +199,14 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         if (markedMap[r+1][c+1] == 3) {
                             r++; c++; steps++;
                         }
-                        //If bottom right block is occupied, something is wrong.
                         else return false;
-                    }   
+                    }
+                    else return false;
                 }
-                //Right block is empty but not marked, and player is at topmost row, right is not an option.
                 else return false;
             }
-            //Right block is not a possible path, empty, or occupied, something is wrong.
             else return false;
         }
-        //Block is at the rightmost position, right is not an option.
         return false;
     }
 }
