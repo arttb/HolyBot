@@ -13,9 +13,15 @@ opencv2/highgui/highgui.hpp
 -
 opencv2/imgproc/imgproc.hpp
 -
-ApplicationServices/ApplicationServices.h
--
 stdlib.h
+-
+cstdio
+-
+stdio.h
+-
+unistd.h
+-
+ApplicationServices/ApplicationServices.h
 -
 
 /usr/local/include/opencv2/core/core.hpp

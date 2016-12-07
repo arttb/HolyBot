@@ -82,7 +82,7 @@ void markAdjacentSpaces(int g[ROWS][COLS], int r, int c) {
 }
 
 bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
-
+    return false;
 }
 
 bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
@@ -101,21 +101,60 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
             if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
                 return true;
 
-        //Look right.
         if(c != COLS-1) {
+
+            //Check right block.
             if(markedMap[r][c+1] == 3) {
                 c++; steps++;
-            } else if (markedMap[r][c+1] == 1) {
+            }
+
+            //If right block is occupied, check top right.
+            else if (markedMap[r][c+1] == 1) {
                 if(r != 0) {
+
+                    //Check top right.
                     if(markedMap[r-1][c+1] == 3) {
                         c++; r--; steps++;
+                    
+                    //If top right block is occupied, check top.
                     } else if (markedMap[r-1][c+1] == 1) {
+
+                        //Check top block.
                         if(markedMap[r-1][c] == 3) {
                             r--; steps++;
-                        } else return false;
+                        } 
+
+                        //If top block is occupied, something is wrong.                        
+                        else return false;
                     }
                 }
+            
+            //If right block is empty, check bottom block.
+            } else if (markedMap[r][c+1] == 0) {
+                if (r != ROWS-1) {
+
+                    //Check bottom block.
+                    if (markedMap[r+1][c] == 3) {
+                        r++; steps++;
+                    }
+                    
+                    //If bottom block is occupied, check bottom right block.
+                    else if (markedMap[r+1][c] == 1) {
+
+                        //Check bottom right block.
+                        if (markedMap[r+1][c+1] == 3) {
+                            r++; c++; steps++;
+                        } 
+                        
+                        //If bottom right block is occupied, something is wrong.
+                        else return false;
+                    }
+                    
+                }
             }
+
+            //Right block is not a possible path, empty, or occupied, something is wrong.
+            else return false;
         }
     }
 }
@@ -140,7 +179,7 @@ int findShortestPath(int given[ROWS][COLS], cv::vector<cv::vector<int> > spots) 
         }
     
     //Mark empty spots on the bottom row as possible.
-    for(int j = 0; j < COLS)
+    for(int j = 0; j < COLS; j++)
         if(gc[ROWS-1][j] == 0)
             gc[ROWS-1][j] = 3;
 
@@ -468,8 +507,6 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(0) << " ";
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
-
-        std::cout << "Number of steps to take: " << steps(gridHero, findAvailableHoles(gridWall, gridHero)) << std::endl;
 
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
