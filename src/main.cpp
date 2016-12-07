@@ -86,11 +86,38 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
 }
 
 bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+
     int r = pos[0];
     int c = pos[1];
     
-    //Start left.
-    
+    bool foundSpot = false;
+
+    steps = 0;
+
+    while(true) {
+
+        //Check if currently at the spot.
+        for(int i = 0; i < spots.size(); i++)
+            if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
+                return true;
+
+        //Look right.
+        if(c != COLS-1) {
+            if(markedMap[r][c+1] == 3) {
+                c++; steps++;
+            } else if (markedMap[r][c+1] == 1) {
+                if(r != 0) {
+                    if(markedMap[r-1][c+1] == 3) {
+                        c++; r--; steps++;
+                    } else if (markedMap[r-1][c+1] == 1) {
+                        if(markedMap[r-1][c] == 3) {
+                            r--; steps++;
+                        } else return false;
+                    }
+                }
+            }
+        }
+    }
 }
 
 int findShortestPath(int given[ROWS][COLS], cv::vector<cv::vector<int> > spots) {
