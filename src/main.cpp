@@ -554,6 +554,8 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
 
+        std::cout << "Number of steps: " << findShortestPath(gridHero, availableHoles) << std::endl;
+
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
         break;
