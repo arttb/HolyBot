@@ -361,8 +361,6 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
 
-        std::cout << "Number of steps to take: " << steps(gridHero, findAvailableHoles(gridWall, gridHero)) << std::endl;
-
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
         break;
