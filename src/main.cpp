@@ -112,11 +112,20 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
                             r--; steps++;
                         }
                         //If top is occupied, something is wrong.
-                        else return false;
+                        else {
+                            std::cout << "Top block is occupied when it should not be." << std::endl;
+                            return false;
+                        }
                     }
-                    else return false;
+                    else {
+                        std::cout << "Unknown value for top left block. (" << markedMap[r-1][c-1] << ")" << std::endl;
+                        return false;
+                    }
                 }
-                else return false;
+                else {
+                    std::cout << "Row value is zero, cannot search left." << std::endl;
+                    return false;
+                }
             }
             //If left block is empty, check bottom.
             else if(markedMap[r][c-1] == 0) {
@@ -131,16 +140,31 @@ bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, i
                         if(markedMap[r+1][c-1] == 3) {
                             r++; c--; steps++;
                         }
-                        //If bottom left is occupied, something is wrong.
-                        else return false;
+                        else {
+                            std::cout << "Bottom left block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
                     }
-                    else return false;
+                    else {
+                        std::cout << "Unknown value for bottom block. (" << markedMap[r+1][c] << ")" << std::endl;
+                        return false;
+                    }
                 }
-                else return false;
+                else {
+                    std::cout << "Row value is max, cannot turn left anymore." << std::endl;
+                    return false;
+                }
             }
-            else return false;
+            else {
+                std::cout << "Unknown value for left block. (" << markedMap[r][c-1] << ")" << std::endl;
+                return false;
+            }
         }
-        return false;
+        else {
+            std::cout << "Column value is zero, cannot search left." << std::endl;
+            return false;
+        }
+        
     }
 }
 
@@ -173,12 +197,21 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         //Check top block.
                         if(markedMap[r-1][c] == 3) {
                             r--; steps++;
-                        }                     
-                        else return false;
+                        }
+                        else {
+                            std::cout << "Top block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
                     }
-                    else return false;
+                    else {
+                        std::cout << "Unknown value for top right block. (" << markedMap[r-1][c+1] << ")" << std::endl;
+                        return false;
+                    }
                 }
-                else return false;
+                else {
+                    std::cout << "Row value is zero, cannot search upwards." << std::endl;
+                    return false;
+                }
             }
             //If right block is empty, check bottom block.
             else if (markedMap[r][c+1] == 0) {
@@ -193,15 +226,30 @@ bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, 
                         if (markedMap[r+1][c+1] == 3) {
                             r++; c++; steps++;
                         }
-                        else return false;
+                        else {
+                            std::cout << "Bottom right block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
                     }
-                    else return false;
+                    else {
+                        std::cout << "Unknown value for bottom block. (" << markedMap[r+1][c] << ")" << std::endl;
+                        return false;
+                    }
                 }
-                else return false;
+                else {
+                    std::cout << "Row value at max, cannot search right." << std::endl;
+                    return false;
+                }
             }
-            else return false;
+            else {
+                std::cout << "Unknown value for right block. (" << markedMap[r][c+1] << ")" << std::endl;
+                return false;
+            }
         }
-        return false;
+        else {
+            std::cout << "Column value is max, cannot search right." << std::endl;
+            return false;
+        }
     }
 }
 
