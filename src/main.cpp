@@ -25,6 +25,15 @@ extern "C" {
 
         fprintf(file, "%c", '0');
 
+        file = fopen("/dev/cu.usbmodem1421", "r");
+
+        if(file) {
+            int c;
+            while((c = getc(file)) != EOF)
+                putchar(c);
+            fclose(file);
+        }
+
         printf("Tapped left.\n");
         
         fclose(file);
@@ -45,6 +54,17 @@ extern "C" {
         }
 
         fprintf(file, "%c", '1');
+        sleep(1);
+        fprintf(file, "%d", 1);
+
+        file = fopen("/dev/cu.usbmodem1421", "r");
+        
+        if(file) {
+            int c;
+            while((c = getc(file)) != EOF)
+                putchar(c);
+            fclose(file);
+        }
         
         printf("Tapped right.\n");
 
@@ -332,9 +352,12 @@ cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COL
 
 int main( int argc, char** argv) {
 
-    //tapLeft();
-    //sleep(1);
-    //return 0;
+    while(true) {
+        tapRight();
+        sleep(1);
+    }
+
+    return 0;
     //Creating a window to display everything
     cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE); // Create a window for display.
 
