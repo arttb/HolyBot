@@ -23,8 +23,7 @@ extern "C" {
             return false;
         }
 
-        sleep(1);
-        fprintf(file, "%d", 0);
+        fprintf(file, "%c", '0');
 
         printf("Tapped left.\n");
         
@@ -45,8 +44,7 @@ extern "C" {
             return false;
         }
 
-        sleep(1);
-        fprintf(file, "%d", 1);
+        fprintf(file, "%c", '1');
         
         printf("Tapped right.\n");
 
@@ -419,9 +417,9 @@ int main( int argc, char** argv) {
         std::cout << static_cast<int>(bgrPixel4[2]) << std::endl;
         */
 
-        if (static_cast<int>(bgrPixel3[0]) < 222 && static_cast<int>(bgrPixel3[1]) < 222 && 
-            static_cast<int>(bgrPixel3[2]) < 230 && static_cast<int>(bgrPixel4[0]) < 222 && 
-            static_cast<int>(bgrPixel4[1]) < 222 && static_cast<int>(bgrPixel4[2]) < 230) {
+        if (static_cast<int>(bgrPixel3[0]) < 222 || static_cast<int>(bgrPixel3[1]) < 222 || 
+            static_cast<int>(bgrPixel3[2]) < 222 || static_cast<int>(bgrPixel4[0]) < 222 || 
+            static_cast<int>(bgrPixel4[1]) < 222 || static_cast<int>(bgrPixel4[2]) < 222) {
                 continue;
         }
         
@@ -629,7 +627,7 @@ int main( int argc, char** argv) {
         //Waitkey delay for HighGUI to process event loops. (Important for the display window)
 		if (cv::waitKey(1) >= 0) break;
 
-        sleep(2);
+        sleep(1);
     }
 
     cv::waitKey(0);
