@@ -54,6 +54,247 @@ float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
     return (deltaX * deltaX) + (deltaY * deltaY);
 }
 
+void markAdjacentSpaces(int g[ROWS][COLS], int r, int c) {
+
+    //Mark top.
+    if(r != 0) {
+        if(g[r-1][c] == 0)
+            g[r-1][c] = 3;
+    }
+
+    //Mark bottom.
+    if(r != ROWS-1) {
+        if(g[r+1][c] == 0)
+            g[r+1][c] = 3;
+    }
+
+    //Mark left.
+    if(c != 0) {
+        if(g[r][c-1] == 0)
+            g[r][c-1] = 3;
+    }
+    //Mark right.
+    if(c != COLS-1) {
+        if(g[r][c+1] == 0)
+            g[r][c+1] = 3;
+    }
+
+}
+
+bool searchLeft(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+
+    int r = pos[0];
+    int c = pos[1];
+
+    steps = 0;
+
+    while(true) {
+        //Check if currently at the spot.
+        for(int i = 0; i < spots.size(); i++)
+            if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
+                return true;
+        if(c != 0) {
+            //Check left block.
+            if(markedMap[r][c-1] == 3) {
+                c--; steps++;
+            }
+            //If left block is occupied, check top left block.
+            else if(markedMap[r][c-1] == 1) {
+                if(r != 0) {
+                    //Check top left.
+                    if(markedMap[r-1][c-1] == 3) {
+                        r--; c--; steps++;
+                    }
+                    //If top left is occupied, check top.
+                    else if(markedMap[r-1][c-1] == 1) {
+                        //Check top.
+                        if(markedMap[r-1][c] == 3) {
+                            r--; steps++;
+                        }
+                        //If top is occupied, something is wrong.
+                        else {
+                            std::cout << "Top block is occupied when it should not be." << std::endl;
+                            return false;
+                        }
+                    }
+                    else {
+                        std::cout << "Unknown value for top left block. (" << markedMap[r-1][c-1] << ")" << std::endl;
+                        return false;
+                    }
+                }
+                else {
+                    std::cout << "Row value is zero, cannot search left." << std::endl;
+                    return false;
+                }
+            }
+            //If left block is empty, check bottom.
+            else if(markedMap[r][c-1] == 0) {
+                if(r != ROWS-1) {
+                    //Check bottom.
+                    if(markedMap[r+1][c] == 3) {
+                        r++; steps++;
+                    }
+                    //If bottom is occupied, check bottom left.
+                    else if(markedMap[r+1][c] == 1) {
+                        //Check bottom left.
+                        if(markedMap[r+1][c-1] == 3) {
+                            r++; c--; steps++;
+                        }
+                        else {
+                            std::cout << "Bottom left block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
+                    }
+                    else {
+                        std::cout << "Unknown value for bottom block. (" << markedMap[r+1][c] << ")" << std::endl;
+                        return false;
+                    }
+                }
+                else {
+                    std::cout << "Row value is max, cannot turn left anymore." << std::endl;
+                    return false;
+                }
+            }
+            else {
+                std::cout << "Unknown value for left block. (" << markedMap[r][c-1] << ")" << std::endl;
+                return false;
+            }
+        }
+        else {
+            std::cout << "Column value is zero, cannot search left." << std::endl;
+            return false;
+        }
+        
+    }
+}
+
+bool searchRight(int markedMap[ROWS][COLS], cv::vector<cv::vector<int> > spots, int pos[2], int &steps) {
+
+    int r = pos[0];
+    int c = pos[1];
+
+    steps = 0;
+
+    while(true) {
+        //Check if currently at the spot.
+        for(int i = 0; i < spots.size(); i++)
+            if(spots.at(i).at(0) == r && spots.at(i).at(1) == c)
+                return true;
+        if(c != COLS-1) {
+            //Check right block.
+            if(markedMap[r][c+1] == 3) {
+                c++; steps++;
+            }
+            //If right block is occupied, check top right.
+            else if (markedMap[r][c+1] == 1) {
+                if(r != 0) {
+                    //Check top right.
+                    if(markedMap[r-1][c+1] == 3) {
+                        c++; r--; steps++;
+                    }
+                    //If top right block is occupied, check top.
+                    else if (markedMap[r-1][c+1] == 1) {
+                        //Check top block.
+                        if(markedMap[r-1][c] == 3) {
+                            r--; steps++;
+                        }
+                        else {
+                            std::cout << "Top block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
+                    }
+                    else {
+                        std::cout << "Unknown value for top right block. (" << markedMap[r-1][c+1] << ")" << std::endl;
+                        return false;
+                    }
+                }
+                else {
+                    std::cout << "Row value is zero, cannot search upwards." << std::endl;
+                    return false;
+                }
+            }
+            //If right block is empty, check bottom block.
+            else if (markedMap[r][c+1] == 0) {
+                if (r != ROWS-1) {
+                    //Check bottom block.
+                    if (markedMap[r+1][c] == 3) {
+                        r++; steps++;
+                    }
+                    //If bottom block is occupied, check bottom right block.
+                    else if (markedMap[r+1][c] == 1) {
+                        //Check bottom right block.
+                        if (markedMap[r+1][c+1] == 3) {
+                            r++; c++; steps++;
+                        }
+                        else {
+                            std::cout << "Bottom right block is occupied/empty when it should not be." << std::endl;
+                            return false;
+                        }
+                    }
+                    else {
+                        std::cout << "Unknown value for bottom block. (" << markedMap[r+1][c] << ")" << std::endl;
+                        return false;
+                    }
+                }
+                else {
+                    std::cout << "Row value at max, cannot search right." << std::endl;
+                    return false;
+                }
+            }
+            else {
+                std::cout << "Unknown value for right block. (" << markedMap[r][c+1] << ")" << std::endl;
+                return false;
+            }
+        }
+        else {
+            std::cout << "Column value is max, cannot search right." << std::endl;
+            return false;
+        }
+    }
+}
+
+int findShortestPath(int given[ROWS][COLS], cv::vector<cv::vector<int> > spots) {
+
+    //Steps.
+    int steps;
+
+    //Player position.
+    int playerpos[2];
+
+    //Make a copy of the given array.
+    int gc[ROWS][COLS];
+    for(int i = 0; i < ROWS; i++)
+        for(int j = 0; j < COLS; j++) {
+            gc[i][j] = given[i][j];
+            if(gc[i][j] == 2) {
+                playerpos[0] = i;
+                playerpos[1] = j;
+            }
+        }
+    
+    //Mark empty spots on the bottom row as possible.
+    for(int j = 0; j < COLS; j++)
+        if(gc[ROWS-1][j] == 0)
+            gc[ROWS-1][j] = 3;
+
+    for(int i = 0; i < ROWS; i++)
+        for(int j = 0; j < COLS; j++)
+            if(gc[i][j] == 1)
+                markAdjacentSpaces(gc, i, j);
+    
+    //Pathfinding - left.
+    if(searchLeft(gc, spots, playerpos, steps))
+        return -steps;
+
+    //Pathfinding - right.
+    if(searchRight(gc, spots, playerpos, steps))
+        return steps;
+    
+    //Not a possible number of steps so you know something's wrong.
+    return 1000;
+
+}
+
 cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COLS]) {
     cv::vector<cv::vector<int> > availableHoles;
 
@@ -361,6 +602,8 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
 
+        std::cout << "Number of steps: " << findShortestPath(gridHero, availableHoles) << std::endl;
+        
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
         break;
