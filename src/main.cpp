@@ -326,6 +326,9 @@ cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COL
 
 int main( int argc, char** argv) {
 
+    //tapLeft();
+    //sleep(1);
+    //return 0;
     //Creating a window to display everything
     cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE); // Create a window for display.
 
@@ -409,10 +412,13 @@ int main( int argc, char** argv) {
         */
 
         if (static_cast<int>(bgrPixel3[0]) < 222 && static_cast<int>(bgrPixel3[1]) < 222 && 
-            static_cast<int>(bgrPixel3[2]) < 222 && static_cast<int>(bgrPixel4[0]) < 222 && 
-            static_cast<int>(bgrPixel4[1]) < 222 && static_cast<int>(bgrPixel4[2]) < 222) {
+            static_cast<int>(bgrPixel3[2]) < 230 && static_cast<int>(bgrPixel4[0]) < 222 && 
+            static_cast<int>(bgrPixel4[1]) < 222 && static_cast<int>(bgrPixel4[2]) < 230) {
                 continue;
         }
+        
+        for(int z = 0; z < 3; z++) std::cout << "BGR Value: " << static_cast<int>(bgrPixel3[z]) << std::endl;
+        for(int z = 0; z < 3; z++) std::cout << "BGR Value: " << static_cast<int>(bgrPixel4[z]) << std::endl;
 
         //Crop the wall
         cv::Point c1(croppedImage.cols / 4, croppedImage.rows / 4.8);
@@ -538,8 +544,7 @@ int main( int argc, char** argv) {
             for (int l = 0; l < COLS; l++) {
                 xWallPos += wallDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
-                for(int z = 0; z < 3; z++) std::cout << "(" << i << ", " << l << ", " << z << ") BGR Value: " << static_cast<int>(bgrPixel[z]) << std::endl;
-                circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
+                //circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
                 gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
             }
             xWallPos = cr1.x - wallDistHorizontal / 2.0;
@@ -568,10 +573,11 @@ int main( int argc, char** argv) {
             for (int l = 1; l < COLS - 1; l++) {
                 xHeroPos += heroDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xHeroPos, yHeroPos));
+                //for(int z = 0; z < 3; z++) std::cout << "(" << i << ", " << l << ", " << z << ") BGR Value: " << static_cast<int>(bgrPixel[z]) << std::endl;
 
                 if ((static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200)) {
                     gridHero[ROWS - i - 1][l] = 1;
-                }else if ((static_cast<int>(bgrPixel[0]) > 45 && static_cast<int>(bgrPixel[0]) < 65 && static_cast<int>(bgrPixel[1]) > 185 && static_cast<int>(bgrPixel[1]) < 195 && static_cast<int>(bgrPixel[2]) > 245 && static_cast<int>(bgrPixel[2]) < 255)) {
+                }else if ((static_cast<int>(bgrPixel[0]) > 40 && static_cast<int>(bgrPixel[0]) < 65 && static_cast<int>(bgrPixel[1]) > 185 && static_cast<int>(bgrPixel[1]) < 195 && static_cast<int>(bgrPixel[2]) > 245 && static_cast<int>(bgrPixel[2]) < 255)) {
                     gridHero[ROWS - i - 1][l] = 2;
                 }else{
                     gridHero[ROWS - i - 1][l] = 0;
@@ -602,14 +608,20 @@ int main( int argc, char** argv) {
             std::cout << availableHoles.at(i).at(1) << std::endl;
         }
 
-        std::cout << "Number of steps: " << findShortestPath(gridHero, availableHoles) << std::endl;
+        int path = findShortestPath(gridHero, availableHoles);
+        std::cout << "Number of steps: " << path << std::endl;
         
+        for (int i = 0; i < abs(path); i++)
+            if (path > 0) tapRight();
+            else tapLeft();
+
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
-        break;
+
         //Waitkey delay for HighGUI to process event loops. (Important for the display window)
 		if (cv::waitKey(1) >= 0) break;
 
+        sleep(2);
     }
 
     cv::waitKey(0);
