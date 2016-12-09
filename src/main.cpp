@@ -284,7 +284,7 @@ int findShortestPath(int given[ROWS][COLS], cv::vector<cv::vector<int> > spots) 
     
     //Pathfinding - left.
     if(searchLeft(gc, spots, playerpos, steps))
-        return steps;
+        return -steps;
 
     //Pathfinding - right.
     if(searchRight(gc, spots, playerpos, steps))
