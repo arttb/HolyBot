@@ -18,11 +18,15 @@ extern "C" {
         FILE *file;
         file = fopen("/dev/cu.usbmodem1421","w");
 
-        if (file == NULL)
+        if (file == NULL) {
+            perror("Error");
             return false;
+        }
 
         sleep(1);
         fprintf(file, "%d", 0);
+
+        printf("Tapped left.\n");
         
         fclose(file);
 
@@ -36,12 +40,16 @@ extern "C" {
         FILE *file;
         file = fopen("/dev/cu.usbmodem1421","w");
 
-        if (file == NULL)
+        if (file == NULL) {
+            perror("Error");
             return false;
+        }
 
         sleep(1);
         fprintf(file, "%d", 1);
         
+        printf("Tapped right.\n");
+
         fclose(file);
 
         return true;
