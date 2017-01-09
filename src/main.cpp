@@ -32,6 +32,8 @@ extern "C" {
             while((c = getc(file)) != EOF)
                 putchar(c);
             fclose(file);
+        } else {
+            perror("Error");
         }
 
         printf("Tapped left.\n");
@@ -64,6 +66,8 @@ extern "C" {
             while((c = getc(file)) != EOF)
                 putchar(c);
             fclose(file);
+        } else {
+            perror("Error");
         }
         
         printf("Tapped right.\n");
@@ -353,7 +357,7 @@ cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COL
 int main( int argc, char** argv) {
 
     while(true) {
-        tapRight();
+        tapLeft();
         sleep(1);
     }
 
