@@ -11,67 +11,36 @@
 
 #define COLS 8
 #define ROWS 5
+#define ARDUINO_PATH "/dev/cu.usbmodem1421"
 
-extern "C" {
-    bool tapLeft() {
+bool tapLeft(FILE *file) {
 
-        FILE *file;
-        file = fopen("/dev/cu.usbmodem1421","w");
-
-        if (file == NULL) {
-            perror("Error");
-            return false;
-        }
-
-        fprintf(file, "%c", '0');
-
-        file = fopen("/dev/cu.usbmodem1421", "r");
-
-        if(file) {
-            int c;
-            while((c = getc(file)) != EOF)
-                putchar(c);
-            fclose(file);
-        }
-
-        printf("Tapped left.\n");
-        
-        fclose(file);
-
-        return true;
+    if (file == NULL) {
+        perror("Error");
+        return false;
     }
+
+    sleep(1);
+    fprintf(file, "%c", '0');
+
+    printf("Tapped left.\n");
+
+    return true;
 }
 
-extern "C" {
-    bool tapRight() {
+bool tapRight(FILE *file) {
 
-        FILE *file;
-        file = fopen("/dev/cu.usbmodem1421","w");
-
-        if (file == NULL) {
-            perror("Error");
-            return false;
-        }
-
-        fprintf(file, "%c", '1');
-        sleep(1);
-        fprintf(file, "%d", 1);
-
-        file = fopen("/dev/cu.usbmodem1421", "r");
-        
-        if(file) {
-            int c;
-            while((c = getc(file)) != EOF)
-                putchar(c);
-            fclose(file);
-        }
-        
-        printf("Tapped right.\n");
-
-        fclose(file);
-
-        return true;
+    if (file == NULL) {
+        perror("Error");
+        return false;
     }
+
+    sleep(1);
+    fprintf(file, "%c", '1');
+    
+    printf("Tapped right.\n");
+
+    return true;
 }
 
 float CalculateDistance(const cv::Point& pt1, const cv::Point& pt2) {
@@ -352,12 +321,6 @@ cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COL
 
 int main( int argc, char** argv) {
 
-    while(true) {
-        tapRight();
-        sleep(1);
-    }
-
-    return 0;
     //Creating a window to display everything
     cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE); // Create a window for display.
 
@@ -640,9 +603,14 @@ int main( int argc, char** argv) {
         int path = findShortestPath(gridHero, availableHoles);
         std::cout << "Number of steps: " << path << std::endl;
         
+        FILE *file;
+        file = fopen(ARDUINO_PATH, "w");
+
         for (int i = 0; i < abs(path); i++)
-            if (path > 0) tapRight();
-            else tapLeft();
+            if (path > 0) tapRight(file);
+            else tapLeft(file);
+        
+        fclose(file);
 
         //Displaying the screenshot
         cv::imshow("Display window", croppedImage); 
