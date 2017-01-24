@@ -11,7 +11,7 @@
 
 #define COLS 8
 #define ROWS 5
-#define ARDUINO_PATH "/dev/cu.usbmodem1421"
+#define ARDUINO_PATH "/dev/cu.wchusbserial1410"
 
 bool tapLeft(FILE *file) {
 
@@ -21,8 +21,7 @@ bool tapLeft(FILE *file) {
         return false;
     }
 
-    sleep(1);
-    fprintf(file, "%c", '0');
+    fprintf(file, "%c\n", '0');
 
     printf("Tapped left.\n");
 
@@ -36,8 +35,7 @@ bool tapRight(FILE *file) {
         return false;
     }
 
-    sleep(1);
-    fprintf(file, "%c", '1');
+    fprintf(file, "%c\n", '1');
     
     printf("Tapped right.\n");
 
