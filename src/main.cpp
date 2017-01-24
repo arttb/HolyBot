@@ -392,10 +392,10 @@ int main( int argc, char** argv) {
         if (testPixel1 == bgrPixel1 && testPixel2 == bgrPixel2) continue;
 
         //Skip all frames except for the one when the wall is at certain position
-        cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3, croppedImage.rows / 3));
-        cv::Vec3b bgrPixel4 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3));
-        circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
-        circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3 * 1.1, croppedImage.rows / 3.5));
+        cv::Vec3b bgrPixel4 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols * 2 / 3.3 * 0.95, croppedImage.rows / 3.5));
+        //circle(croppedImage, cv::Point(croppedImage.cols / 3 * 1.1, croppedImage.rows / 3.5), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        //circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3 * 0.95, croppedImage.rows / 3.5), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
         
         /*
         std::cout << static_cast<int>(bgrPixel3[0]) << std::endl;
@@ -407,9 +407,9 @@ int main( int argc, char** argv) {
         std::cout << static_cast<int>(bgrPixel4[2]) << std::endl;
         */
 
-        if (static_cast<int>(bgrPixel3[0]) < 222 || static_cast<int>(bgrPixel3[1]) < 222 || 
-            static_cast<int>(bgrPixel3[2]) < 222 || static_cast<int>(bgrPixel4[0]) < 222 || 
-            static_cast<int>(bgrPixel4[1]) < 222 || static_cast<int>(bgrPixel4[2]) < 222) {
+        if (static_cast<int>(bgrPixel3[0]) < 210 || static_cast<int>(bgrPixel3[1]) < 210 || 
+            static_cast<int>(bgrPixel3[2]) < 210 || static_cast<int>(bgrPixel4[0]) < 210 || 
+            static_cast<int>(bgrPixel4[1]) < 210 || static_cast<int>(bgrPixel4[2]) < 210) {
                 continue;
         }
         
@@ -417,10 +417,17 @@ int main( int argc, char** argv) {
         for(int z = 0; z < 3; z++) std::cout << "BGR Value: " << static_cast<int>(bgrPixel4[z]) << std::endl;
 
         //Crop the wall
-        cv::Point c1(croppedImage.cols / 4, croppedImage.rows / 4.8);
-        cv::Point c2(croppedImage.cols / 4, croppedImage.rows / 2.8);
-        cv::Point c3(croppedImage.cols * 2.8 / 4, croppedImage.rows / 4.8);
-        cv::Point c4(croppedImage.cols * 2.8 / 4, croppedImage.rows / 2.8);
+        cv::Point c1(croppedImage.cols / 3.5, croppedImage.rows / 5.5);
+        cv::Point c2(croppedImage.cols / 3.5, croppedImage.rows / 3.4);
+        cv::Point c3(croppedImage.cols * 2.5 / 4, croppedImage.rows / 5.5);
+        cv::Point c4(croppedImage.cols * 2.5 / 4, croppedImage.rows / 3.4);
+
+        /*
+        circle(croppedImage, c1, 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, c2, 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, c3, 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, c4, 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        */
 
         //Crop the hero wall
         cv::Point h1(croppedImage.cols / 7, croppedImage.rows * 4.4 / 6);
@@ -540,8 +547,9 @@ int main( int argc, char** argv) {
             for (int l = 0; l < COLS; l++) {
                 xWallPos += wallDistHorizontal;
                 cv::Vec3b bgrPixel = croppedImage.at<cv::Vec3b>(cv::Point(xWallPos, yWallPos));
+                for(int z = 0; z < 3; z++) std::cout << "(" << i << ", " << l << ", " << z << ") BGR Value: " << static_cast<int>(bgrPixel[z]) << std::endl;
                 //circle(croppedImage, cv::Point(xWallPos, yWallPos), 1, cv::Scalar(255, 0, 255), 8, 1, 0);
-                gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 200 && static_cast<int>(bgrPixel[1]) > 200 && static_cast<int>(bgrPixel[2]) > 200);
+                gridWall[i][l] = (static_cast<int>(bgrPixel[0]) > 190 && static_cast<int>(bgrPixel[1]) > 190 && static_cast<int>(bgrPixel[2]) > 190);
             }
             xWallPos = cr1.x - wallDistHorizontal / 2.0;
             yWallPos = cr1.y + wallDistVertical / 2.0 + wallDistVertical * (i + 1) - wallDistVertical / 25 * (ROWS - i);
@@ -619,7 +627,7 @@ int main( int argc, char** argv) {
         //Waitkey delay for HighGUI to process event loops. (Important for the display window)
 		if (cv::waitKey(1) >= 0) break;
 
-        sleep(1);
+        sleep(3);
     }
 
     cv::waitKey(0);
