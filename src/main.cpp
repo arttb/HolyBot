@@ -15,6 +15,7 @@
 
 bool tapLeft(FILE *file) {
 
+
     if (file == NULL) {
         perror("Error");
         return false;
@@ -391,8 +392,8 @@ int main( int argc, char** argv) {
         //Skip all frames except for the one when the wall is at certain position
         cv::Vec3b bgrPixel3 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols / 3, croppedImage.rows / 3));
         cv::Vec3b bgrPixel4 = croppedImage.at<cv::Vec3b>(cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3));
-        //circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
-        //circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, cv::Point(croppedImage.cols / 3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
+        circle(croppedImage, cv::Point(croppedImage.cols * 2 / 3.3, croppedImage.rows / 3), 1, cv::Scalar(0, 255, 0), 8, 1, 0);
         
         /*
         std::cout << static_cast<int>(bgrPixel3[0]) << std::endl;
