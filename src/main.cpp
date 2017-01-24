@@ -11,7 +11,7 @@
 
 #define COLS 8
 #define ROWS 5
-#define ARDUINO_PATH "/dev/cu.usbmodem1421"
+#define ARDUINO_PATH "/dev/cu.wchusbserial1410"
 
 bool tapLeft(FILE *file) {
 
@@ -20,8 +20,7 @@ bool tapLeft(FILE *file) {
         return false;
     }
 
-    sleep(1);
-    fprintf(file, "%c", '0');
+    fprintf(file, "%c\n", '0');
 
     printf("Tapped left.\n");
 
@@ -35,8 +34,7 @@ bool tapRight(FILE *file) {
         return false;
     }
 
-    sleep(1);
-    fprintf(file, "%c", '1');
+    fprintf(file, "%c\n", '1');
     
     printf("Tapped right.\n");
 
@@ -321,6 +319,9 @@ cv::vector<cv::vector<int> > findAvailableHoles(int wall[][COLS], int hero[][COL
 
 int main( int argc, char** argv) {
 
+    FILE *file;
+    file = fopen(ARDUINO_PATH, "w");
+
     //Creating a window to display everything
     cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE); // Create a window for display.
 
@@ -602,9 +603,6 @@ int main( int argc, char** argv) {
 
         int path = findShortestPath(gridHero, availableHoles);
         std::cout << "Number of steps: " << path << std::endl;
-        
-        FILE *file;
-        file = fopen(ARDUINO_PATH, "w");
 
         for (int i = 0; i < abs(path); i++)
             if (path > 0) tapRight(file);
